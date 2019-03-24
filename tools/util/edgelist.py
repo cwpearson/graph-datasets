@@ -28,21 +28,21 @@ class BEL:
         return BELIter(self.mp)
 
 
-def TSVIter(f):
-    for line in f:
-        fields = line.split()
-        dst = int(fields[0])
-        src = int(fields[1])
-        yield src, dst
+def TSVIter(path):
+    with open(path, "r") as f:
+        for line in f:
+            fields = line.split()
+            dst = int(fields[0])
+            src = int(fields[1])
+            yield src, dst
 
 
 class TSV:
     def __init__(self,path):
         self.path = path
-        self.f = open(path, "r")
 
     def __del__(self):
-        self.f.close()
+        pass
 
     def __enter__(self):
         return self
@@ -51,7 +51,7 @@ class TSV:
         pass
 
     def __iter__(self):
-        return TSVIter(self.f)
+        return TSVIter(self.path)
 
 
 class edgelist:
