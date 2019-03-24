@@ -21,7 +21,7 @@ class BEL:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
     def __iter__(self):
@@ -69,7 +69,7 @@ class edgelist:
             assert False
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
     def __iter__(self):
