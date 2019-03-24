@@ -1,48 +1,48 @@
 #! /usr/bin/env python
 
-'''convert a graph challenge tsv ascii edge list to binary format (.bel)
-the binary format is for each edge
-* 64-bit integer dst
-* 64-bit integer src
-* 64-bit integer weight
-all numbers are stored little endian (least significant byte first)
-
-the number of edges is the byte-length of the file divided by 24
-
-you can view the produced file with 
-xxd -c 24 <file> to see one edge per line
+'''
 '''
 
 from __future__ import print_function
 import sys
 import struct
 import os
+import argparse
+import logging
+from util.edgelist import edgelist
 
-tsv_path = sys.argv[1]
-if len(sys.argv) > 2:
-    bel_path = sys.argv[2]
-else:
-    assert tsv_path.endswith(".tsv")
-    bel_path = tsv_path[:-4] + ".bel"
+logging.basicConfig(level=logging.INFO)
 
-# tsv path and bel path should not be the same
-assert tsv_path != bel_path
+parser = argparse.ArgumentParser()
+parser.add_argument("file", help="input file")
+parser.add_argument("to", choices=["bel", "tsv"], help="convert to this output type")
+parser.add_argument('-f', "--force", action="store_true", help="overwrite output file")
+parser.add_argument('-s', "--skip", action="store_true", help="skip converting files where the output already exists")
+parser.add_argument("--out-prefix", type=str, help="prefix for converted files", default="")
+args = parser.parse_args()
 
-if os.path.isfile(bel_path):
-    print("{} alread exists".format(bel_path))
-    sys.exit(1)
+# create / check output path
+outputPath = None
 
-with open(tsv_path, 'rb') as inf, open(bel_path, 'wb') as outf:
-    for line in inf:
-        dst, src, weight = line.split()
-        try:
-            dstBytes = struct.pack("<Q", int(dst))
-            srcBytes = struct.pack("<Q", int(src))
-            weightBytes = struct.pack("<Q", int(weight))
-        except ValueError as e:
-            print("error while converting {} to {}: {}".format(tsv_path, bel_path, e))
-            sys.exit(1)
-        outf.write(dstBytes + srcBytes + weightBytes)
+inBaseName, _ = os.path.splitext(os.path.basename(args.file))
+outputPath = os.path.join(args.out_prefix, inBaseName+"."+args.to)
+if not args.force:
+    if os.path.exists(outputPath):
+        if args.skip:
+            logging.info("{} already exists (skipping because of -s)".format(outputPath))
+            sys.exit(0)
+        logging.error("{} already exists (use -f to overwrite)".format(outputPath))
+        sys.exit(-1)
+logging.info("output will be {}".format(outputPath))
 
-# the bel file should be some multiple of 24 bytes
-assert os.path.getsize(bel_path) % 24 == 0
+
+# don't overwrite input during output
+if os.path.abspath(args.file) == os.path.abspath(outputPath):
+    logging.error("{} and {} are the same file".format(args.file, outputPath))
+    sys.exit(-1)
+
+logging.info("convert {} -> {}".format(args.file, outputPath))
+with edgelist(args.file) as inf, edgelist(outputPath) as outf:
+    for edge in inf:
+        outf.write(edge)
+
