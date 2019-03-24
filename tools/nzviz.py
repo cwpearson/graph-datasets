@@ -9,7 +9,6 @@ from __future__ import print_function
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import mmap
 import argparse
 from util.edgelist import edgelist
 import logging
@@ -48,12 +47,13 @@ if args.kind != "show":
         if os.path.exists(outputPath):
             logging.error("{} already exists (use -f to overwrite)".format(outputPath))
             sys.exit(-1)
-    logging.info("output path is {}".format(outputPath))
+    logging.info("output will be {}".format(outputPath))
 
 
 
 arr = np.zeros((args.px, args.px))
 adj = {}
+logging.info("opening {}".format(args.edgeListPath))
 with edgelist(args.edgeListPath) as el:
     # find the max non-zero index
     maxI = 0
@@ -71,9 +71,11 @@ with edgelist(args.edgeListPath) as el:
     logging.info("inserted edges")
 
 # scale counts by log for visualization purposes
+logging.info("scale")
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     arr = np.where(arr > 0, np.log2(arr), 0)
+
 
 # save image and quit
 if args.kind == "img":
