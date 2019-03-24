@@ -29,6 +29,7 @@ parser.add_argument('--kind', choices=["show", "img", "fig"], help="show figure,
 parser.add_argument('-t', '--out-type', help="file type for output file")
 parser.add_argument('--out-prefix', help='prefix for output file', default=os.getcwd())
 parser.add_argument('-f', "--force", action="store_true", help="overwrite output file if it exists")
+parser.add_argument('-s', "--skip", action="store_true", help="skip generation if the output file exists")
 args = parser.parse_args()
 
 # choose output type by figure vs img
@@ -45,8 +46,12 @@ if args.kind != "show":
     outputPath = os.path.join(args.out_prefix, elBaseName+"."+args.out_type)
     if not args.force:
         if os.path.exists(outputPath):
-            logging.error("{} already exists (use -f to overwrite)".format(outputPath))
-            sys.exit(-1)
+            if args.skip:
+                logging.info("{} already exists (skipping because of -s)".format(outputPath))
+                sys.exit(0)
+            else:
+                logging.error("{} already exists (use -f to overwrite)".format(outputPath))
+                sys.exit(-1)
     logging.info("output will be {}".format(outputPath))
 
 
