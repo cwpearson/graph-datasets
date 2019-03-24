@@ -7,12 +7,13 @@ from __future__ import print_function
 import argparse
 import hashlib
 import os
-import urllib
+import urllib.request
+from urllib.parse import urlparse
 import sys
-import urlparse
 import struct
 import gzip
 import shutil
+from util.datasets import GRAPH_CHALLENGE
 
 
 def get_remote_size(url):
@@ -36,16 +37,19 @@ def hash_file(path):
         return hasher.hexdigest().lower()
 
 def get_basename(url):
-    parsed = urlparse.urlparse(url)
+    parsed = urlparse(url)
     path = os.path.basename(parsed.path)
     return path
 
-parser = argparse.ArgumentParser()
+def urlretrieve(url, file_name):
+    with urllib.request.urlopen(url) as response, open(file_name, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
 
+
+parser = argparse.ArgumentParser()
 parser.add_argument("--out", default=".", help="output dir")
 parser.add_argument("--name", help="only download graphs with NAME in URL")
 parser.add_argument("--list", action="store_true", help="print matching graphs, do not download")
-
 args = parser.parse_args()
 
 output_dir = args.out
@@ -56,9 +60,9 @@ if not os.path.isdir(output_dir):
     sys.exit(-1)
 
 if args.name:
-    matching_graphs = [(u, m) for (u, m) in GRAPHS if args.name.lower() in u.lower()]
+    matching_graphs = [(u, m) for (u, m) in GRAPH_CHALLENGE if args.name.lower() in u.lower()]
 else:
-    matching_graphs = GRAPHS
+    matching_graphs = GRAPH_CHALLENGE
 
 
 
@@ -97,7 +101,7 @@ for (url, expected_md5) in matching_graphs:
     if needs_download:
         print("DOWNLOAD", dst, "reason:", needs_download)
         try:
-            urllib.urlretrieve(url, dst)
+            urlretrieve(url, dst)
         except IOError as e:
             print("IOERROR", url, str(e))
             continue
