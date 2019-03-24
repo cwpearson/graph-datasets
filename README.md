@@ -2,7 +2,10 @@
 
 A list of graph datasets, and tools to acquire and analyze them
 
+Eventually, we could like to support
 * [GraphChallenge](https://graphchallenge.mit.edu/data-sets)
+* [Stanford Large Network Datasets (SNAP)](https://snap.stanford.edu/data/index.html
+)
 * [SuiteSparse](sparse.tamu.edu)
 * [Web Data Commons - Hyperlink Graphs](webdatacommons.org/hyperlinkgraph)
 
