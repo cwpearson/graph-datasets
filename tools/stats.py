@@ -53,7 +53,7 @@ def avg(xs):
 def med(xs):
     s = sorted(xs)
     if len(s) % 2 == 0:
-        return s[len(s) // 2]
+        return float(s[len(s) // 2])
     else:
         return (s[len(s) // 2 - 1] + s[len(s) // 2]) / 2.0
 
@@ -67,75 +67,77 @@ def var(xs):
 logging.basicConfig(level=logging.INFO)
 parser = argparse.ArgumentParser(description="Print some graph statistics")
 parser.add_argument('paths', type=str, nargs="+", help="graph files")
+parser.add_argument('-d', '--dag', type=str, choices=["lower", "upper"], nargs="+", default=["lower", "upper"], help="lower (src > dst) or upper (src < dst)")
 args = parser.parse_args()
 
-print("graph, nodes, edges, in_min, in_max, in_avg, in_med, out_min, out_max, out_avg, out_med, out_var, in_ssd, out_ssd, buckets")
+def upper_triangular(edge):
+    return edge[0] < edge[1]
+
+def lower_triangular(edge):
+    return edge[1] < edge[0]
+
+print("graph, dag, nodes, edges, out_min, out_max, out_avg, out_med, out_var, out_ssd, buckets")
 
 for path in args.paths:
+    for dag in args.dag:
 
-    print("{}, ".format(os.path.basename(path)), end = "")
-    sys.stdout.flush()
+        if dag == "upper":
+            dag_filter = upper_triangular
+        elif dag == "lower":
+            dag_filter = lower_triangular
+        else:
+            logging.error("Unhandled DAG filter")
+            sys.exit(-1)
 
-    inc = defaultdict(int)
-    adj = defaultdict(int)
+        print("{}, {}, ".format(os.path.basename(path), dag), end = "")
+        sys.stdout.flush()
 
-    with edgelist(path) as edgelist:
-        for src, dst in edgelist:
-            if src < dst:
-                inc[dst] += 1
-                adj[src] += 1
+        adj = defaultdict(int)
+        dsts = set()
 
-    # compute nodes
-    num_nodes = len(set(inc.keys()).union(set(adj.keys())))
-    # print("nodes:", len(nodes))
+        with edgelist(path) as el:
+            for edge in el:
+                if dag_filter(edge):
+                    src, dst = edge
+                    adj[src] += 1
+                    dsts.add(dst)
 
-    # compute in degree and out degree
-    in_degrees = inc.values()
-    out_degrees = adj.values()
+        # compute nodes
+        num_nodes = len(set(dsts).union(set(adj)))
+        # print("nodes:", len(nodes))
 
-    num_edges = sum(in_degrees)
+        # compute in degree and out degree
+        out_degrees = adj.values()
+        num_edges = sum(out_degrees)
 
-    # in-degree statistics
-    min_in = min(in_degrees)
-    max_in = max(in_degrees)
-    avg_in = avg(in_degrees)
-    med_in = med(in_degrees)
-
-    # out-degree statistics
-    min_out = min(out_degrees)
-    max_out = max(out_degrees)
-    avg_out = avg(out_degrees)
-    med_out = med(out_degrees)
-    var_out = var(out_degrees)
+        # out-degree statistics
+        min_out = min(out_degrees)
+        max_out = max(out_degrees)
+        avg_out = avg(out_degrees)
+        med_out = med(out_degrees)
+        var_out = var(out_degrees)
 
 
-    ssd_in = sum(d ** 2 for d in in_degrees)
-    ssd_out = sum(d ** 2 for d in out_degrees)
-    # print("out ssd:", out_ssd)
-    # print("in ssd :", in_ssd)
+        ssd_out = sum(d ** 2 for d in out_degrees)
+        # print("out ssd:", out_ssd)
+        # print("in ssd :", in_ssd)
 
-    histo_in = histogram_power(in_degrees)
-    histo_out = histogram_power(out_degrees)
+        histo_out = histogram_power(out_degrees)
 
-    # histo_sf2 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 2)
-    # histo_sf3 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 3)
+        # histo_sf2 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 2)
+        # histo_sf3 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 3)
 
-    # print("sf2:", histo_sf2)
-    # print("sf3:", histo_sf3)
+        # print("sf2:", histo_sf2)
+        # print("sf3:", histo_sf3)
 
-    print("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
-        num_nodes,
-        num_edges,
-        min_in,
-        max_in,
-        avg_in,
-        med_in,
-        min_out,
-        max_out,
-        avg_out,
-        med_out,
-        var_out,
-        ssd_in,
-        ssd_out,
-        ", ".join(str(e) for e in histo_out)
-    ))
+        print("{}, {}, {}, {}, {}, {}, {}, {}, {}".format(
+            num_nodes,
+            num_edges,
+            min_out,
+            max_out,
+            avg_out,
+            med_out,
+            var_out,
+            ssd_out,
+            ", ".join(str(e) for e in histo_out)
+        ))
