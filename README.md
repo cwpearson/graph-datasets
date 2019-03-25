@@ -36,16 +36,24 @@ Create a 2d histogram of edges binned by src/dst node IDs.
 
 ## Examples
 
-Download graph data
+Download graph data.
+`DOWNLOAD` means that a file was downloaded, and a reason is provided.
+`MD5_MATCH` means that a file with the same name and MD5 was already discovered in the output directory.
+`EXTRACT_MATCH` means that an extracted file of the correct size was already discovered in the output directory.
 ```
 $ python3 ~/repos/graph-datasets/tools/download.py --name scale18
 MD5_MATCH ./graph500-scale18-ef16_adj.tsv.gz
 EXTRACT_MATCH ./graph500-scale18-ef16_adj.tsv
 ```
 
-Convert all tsv files to bel in parallel, skipping (with 0 exit) for existing bel files
+Convert all `tsv` files to `bel` in parallel, skipping (with 0 exit) for existing bel files
 ```bash
 $ for t in *.tsv; do python3 ~/repos/graph-datasets/tools/convert.py $t bel -s &; done
+```
+
+Generate statistics for all `bel` files
+```
+$ python3 ~/repos/graph-datasets/tools/stats.py *.bel
 ```
 
 ## Data Formats
