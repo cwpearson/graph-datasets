@@ -34,6 +34,20 @@ Create a 2d histogram of edges binned by neighbor list lenghts.
 
 Create a 2d histogram of edges binned by src/dst node IDs.
 
+## Examples
+
+Download graph data
+```
+$ python3 ~/repos/graph-datasets/tools/download.py --name scale18
+MD5_MATCH ./graph500-scale18-ef16_adj.tsv.gz
+EXTRACT_MATCH ./graph500-scale18-ef16_adj.tsv
+```
+
+Convert all tsv files to bel in parallel, skipping (with 0 exit) for existing bel files
+```bash
+$ for t in *.tsv; do python3 ~/repos/graph-datasets/tools/convert.py $t bel -s &; done
+```
+
 ## Data Formats
 
 ### tsv
