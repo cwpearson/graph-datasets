@@ -14,7 +14,7 @@ import util.path
 import os
 
 logging.basicConfig(level=logging.INFO)
-parser = argparse.ArgumentParser(description="Print some graph statistics")
+parser = argparse.ArgumentParser(description="partition edge list file")
 parser.add_argument('path', type=str, help="graph file")
 parser.add_argument('rows', type=int, help="number of partitions")
 parser.add_argument('-o', '--out-dir', type=str, default="", help="output directory")
