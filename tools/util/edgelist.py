@@ -82,7 +82,7 @@ class TSV:
 
     def write(self, edge):
         if not self.f:
-            self.f = open(path, "w")
+            self.f = open(self.path, "w")
         src, dst = edge
         weight = str(1)
         self.f.write("{}\t{}\t{}\n".format(dst, src, weight))    
@@ -93,16 +93,25 @@ class edgelist:
         self.path = path
         self.reader = None
         self.writer = None
-        
+
+    def _lazy_init(self):
+        if not self.reader:
+            if self.path.endswith(".bel"):
+                self.reader = BELReader(self.path)
+            elif self.path.endswith(".tsv"):
+                self.reader = TSV(self.path)
+            else:
+                assert False
+        if not self.writer:
+            if self.path.endswith(".bel"):
+                self.writer = BELWriter(self.path)
+            elif self.path.endswith(".tsv"):
+                self.writer = TSV(self.path)
+            else:
+                assert False
 
     def __enter__(self):
-        if self.path.endswith(".bel"):
-            self.reader = BELReader(self.path)
-            self.writer = BELWriter(self.path)
-        elif self.path.endswith(".tsv"):
-            self.reader = TSV(self.path)
-        else:
-            assert False
+        self._lazy_init()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -112,4 +121,5 @@ class edgelist:
         return iter(self.reader)
 
     def write(self, edge):
+        self._lazy_init()
         return self.writer.write(edge)
