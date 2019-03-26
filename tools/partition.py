@@ -21,6 +21,14 @@ parser.add_argument('-o', '--out-dir', type=str, default="", help="output direct
 parser.add_argument('-f', '--force', action='store_true', help="overwrite existing output files")
 args = parser.parse_args()
 
+def block_overwrite(path):
+    if os.path.exists(path):
+        if args.force:
+            logging.warn("overwriting {}".format(path))
+        else:
+            logging.error("{} exists (-f to overwrite)".format(path))
+            sys.exit(1)
+
 def upper_triangular(edge):
     return edge[0] < edge[1]
 
@@ -34,22 +42,23 @@ with edgelist(args.path) as el:
 
     ## create one partition file for each pair of partitions
 
-    partELs = [[None for j in range(args.rows)]for i in range(args.rows)]
+    edgelists = [[None for j in range(args.rows)]for i in range(args.rows)]
+    csrs = [[None for j in range(args.rows)]for i in range(args.rows)]
     for i in range(args.rows):
         for j in range(args.rows):
 
-            # construct output file name
+            # construct output file names
             infdir, infbase, infext = util.path.split(args.path)
-            partBase = infbase + "_{}-{}".format(i,j)
-            partFilePath = os.path.join(args.out_dir, partBase +infext)
-            logging.info(partFilePath)
-            if os.path.exists(partFilePath):
-                if args.force:
-                    logging.warn("overwriting {}".format(partFilePath))
-                else:
-                    logging.error("{} exists (-f to overwrite)".format(partFilePath))
-                    sys.exit(1)
-            partELs[i][j] = edgelist(partFilePath)
+            edgesBase = infbase + "_edges_{}-{}".format(i,j)
+            csrBase = infbase + "_csr_{}-{}".format(i,j)
+            edgesFilePath = os.path.join(args.out_dir, edgesBase +infext)
+            csrFilePath = os.path.join(args.out_dir, csrBase +infext)
+            logging.info(edgesFilePath)
+            block_overwrite(edgesFilePath)
+            logging.info(csrFilePath)
+            block_overwrite(csrFilePath)
+            edgelists[i][j] = edgelist(edgesFilePath)
+            csrs[i][j] = edgelist(csrFilePath)
 
             # figure out the ranges that will be present in this partition
             def part_range(i):
@@ -62,14 +71,15 @@ with edgelist(args.path) as el:
             logging.info("[{}, {}) -> [{}, {})".format(iBegin, iEnd, jBegin, jEnd))
 
             # add corresponding edges to this partition
-            inc = 0
-            exc = 0
+            numCsr = 0
+            numEl = 0
             for edge in el:
-                src, _ = edge
+                src, dst = edge
                 if (src >= iBegin and src < iEnd) or (src >= jBegin and src < jEnd):
-                    partELs[i][j].write(edge)
-                    inc += 1
-                else:
-                    exc += 1
-            logging.info("included {}/{} edges".format(inc, inc+exc))
+                    csrs[i][j].write(edge)
+                    numCsr += 1
+                if (src >= iBegin and src < iEnd) and (dst >= jBegin and dst < jEnd):
+                    edgelists[i][j].write(edge)
+                    numEl += 1
+            logging.info("included {} edges and {} csr nzs".format(numEl, numCsr))
 
