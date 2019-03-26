@@ -16,7 +16,7 @@ import os
 logging.basicConfig(level=logging.INFO)
 parser = argparse.ArgumentParser(description="Print some graph statistics")
 parser.add_argument('path', type=str, help="graph file")
-parser.add_argument('-r', '--rows', type=int, help="create row-wise partitions")
+parser.add_argument('rows', type=int, help="number of partitions")
 parser.add_argument('-o', '--out-dir', type=str, default="", help="output directory")
 parser.add_argument('-f', '--force', action='store_true', help="overwrite existing output files")
 args = parser.parse_args()
@@ -68,7 +68,8 @@ with edgelist(args.path) as el:
                 return partStart, partEnd
             iBegin, iEnd = part_range(i)
             jBegin, jEnd = part_range(j)
-            logging.info("[{}, {}) -> [{}, {})".format(iBegin, iEnd, jBegin, jEnd))
+            logging.info("triangle edges from [{}, {}) -> [{}, {})".format(iBegin, iEnd, jBegin, jEnd))
+            logging.info("csr edges from [{}, {}) -> [all] and [{}, {}) -> [all]".format(iBegin, iEnd, jBegin, jEnd))
 
             # add corresponding edges to this partition
             numCsr = 0
