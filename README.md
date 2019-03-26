@@ -34,6 +34,17 @@ Create a 2d histogram of edges binned by neighbor list lenghts.
 
 Create a 2d histogram of edges binned by src/dst node IDs.
 
+### partition.py
+
+`python tools/rows.py <file> --rows N`
+
+Partition a graph into NxN partitions consisting of roughly ` 2 * num_rows / N` rows each.
+
+The partition strategy is to partition the nodes into N sets.
+Then, edges with a source in both node paritions are included.
+Edges for each of the NxN source/dst node parition pairs is placed into a separate file.
+Only the edges that go from one partition to the other in each file should be counted, there are also additional edges to ensure that the count is correct.
+
 ## Examples
 
 Download graph data.
