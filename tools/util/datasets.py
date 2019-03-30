@@ -71,11 +71,6 @@ GRAPH_CHALLENGE = [
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc3/Theory-9-16-25-81-B2k.tsv", "dcd0d6078ccb33322306a3e6449f5b5f" ),
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc3/Theory-9-16-25-B2k.tsv", "31bc14fc7003041d8e5cea059e50a6c4" ),
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc3/Theory-9-16-B2k.tsv", "e750e9c95d244c0857df0e54bcdbaf77" ),
-
-
-
-    # needs sorting
-
     # protein k-mer
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc6/A2a.tsv", "634c8340ddbcae4fc49b799cb8bd1170"), # 1 7.0G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc6/P1a.tsv", "09db6f770ae4a882b1aa24bffab6e413"), # 2, 5.66G
@@ -146,7 +141,7 @@ GRAPH_CHALLENGE = [
     ("https://graphchallenge.s3.amazonaws.com/snap/soc-Slashdot0902/soc-Slashdot0902_adj.tsv", "fe7a3d71eeb11a94ecdf0a0b84766c93"),
     # MAWI Datasets
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512012345.v18571154_e38040320.tsv","919a22f1456d9fd978ba8d12ea96579c"), # 1 669M
-    ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020000.v35991342_e74485420.tsv" "0bf7972ee6f04737e38c25a21ed8d5ff"), # 2 1.4G
+    ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020000.v35991342_e74485420.tsv", "0bf7972ee6f04737e38c25a21ed8d5ff"), # 2 1.4G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020030.v68863315_e143414960.tsv", "6cd699110c541d77066623903a4df720"), # 3 2.7G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020130.v128568730_e270234840.tsv", "51ad8da8cc2d8b25e24b37dddfd6cd4d"), # 4 5.1G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020330.v226196185_e480047894.tsv", "3b7f0546835d1f10cc41312f7a12b8d1"), # 5 9.6G
