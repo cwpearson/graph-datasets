@@ -1,6 +1,8 @@
 # graph-datasets
 
-A list of graph datasets, and tools to acquire and analyze them
+A list of graph datasets, and tools to acquire and analyze them.
+
+Some information about the datasets may be present at https://graphchallenge-datasets.netlify.com/
 
 
 ## Tools
@@ -64,7 +66,7 @@ MD5_MATCH ./graph500-scale18-ef16_adj.tsv.gz
 EXTRACT_MATCH ./graph500-scale18-ef16_adj.tsv
 ```
 
-Convert all `tsv` files to `bel` in parallel, skipping (with 0 exit) for existing bel files
+Convert all `tsv` files to `bel` in parallel, skipping (with 0 exit) existing bel files
 ```bash
 $ for t in *.tsv; do python3 ~/repos/graph-datasets/tools/convert.py $t bel -s &; done
 ```
