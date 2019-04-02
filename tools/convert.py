@@ -18,7 +18,9 @@ parser.add_argument("file", help="input file")
 parser.add_argument("to", choices=["bel", "tsv"], help="convert to this output type")
 parser.add_argument('-f', "--force", action="store_true", help="overwrite output file")
 parser.add_argument('-s', "--skip", action="store_true", help="skip converting files where the output already exists")
+parser.add_argument("--dry-run", action="store_true", help="don't create any output files")
 parser.add_argument("--out-prefix", type=str, help="prefix for converted files", default="")
+
 args = parser.parse_args()
 
 # create / check output path
@@ -42,7 +44,8 @@ if os.path.abspath(args.file) == os.path.abspath(outputPath):
     sys.exit(-1)
 
 logging.info("convert {} -> {}".format(args.file, outputPath))
-with edgelist(args.file) as inf, edgelist(outputPath) as outf:
-    for edge in inf:
-        outf.write(edge)
+if not args.dry_run:
+    with edgelist(args.file) as inf, edgelist(outputPath) as outf:
+        for edge in inf:
+            outf.write(edge)
 
