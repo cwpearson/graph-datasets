@@ -2,22 +2,29 @@
 
 A list of graph datasets, and tools to acquire and analyze them
 
-Eventually, we could like to support
-* [GraphChallenge](https://graphchallenge.mit.edu/data-sets)
-* [Stanford Large Network Datasets (SNAP)](https://snap.stanford.edu/data/index.html
-)
-* [SuiteSparse](sparse.tamu.edu)
-* [Web Data Commons - Hyperlink Graphs](webdatacommons.org/hyperlinkgraph)
 
 ## Tools
 
 All tools require Python 3. If `python tool.py -h` causes an error, check your Python version.
+
+```
+python --version
+```
+
+or possibly
+
+```
+python3 --version
+```
 
 ### download.py
 
 Download datasets.
 
 `python tools/download.py -h` for more info.
+
+This will download and extract graph files.
+All supported files are so far in the tsv format (described below).
 
 ### convert.py
 
@@ -88,7 +95,11 @@ the number of edges is the byte-length of the file divided by 24
 you can view the produced file with 
 `xxd -c 24 <file>` to see one edge per line
 
-## GraphChallenge
+## Wishlist
 
-Includes GenBank 
+
+- [x] [GraphChallenge](https://graphchallenge.mit.edu/data-sets)
+- [ ] [Stanford Large Network Datasets (SNAP)](https://snap.stanford.edu/data/index.html)
+- [ ] [SuiteSparse](sparse.tamu.edu)
+- [ ] [Web Data Commons - Hyperlink Graphs](webdatacommons.org/hyperlinkgraph)
 
