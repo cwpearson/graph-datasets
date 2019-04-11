@@ -130,7 +130,7 @@ for (url, expected_md5) in matching_graphs:
 
         if needs_extract:
             print("EXTRACT", dst, "reason:", needs_extract)
-            with gzip.open(dst, 'rb') as f_in, open(extracted_path, "w") as f_out:
+            with gzip.open(dst, 'rb') as f_in, open(extracted_path, "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
         else:
             print("EXTRACT_MATCH", extracted_path)
