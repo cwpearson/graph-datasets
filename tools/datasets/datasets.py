@@ -145,6 +145,9 @@ GRAPH_CHALLENGE = [
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020030.v68863315_e143414960.tsv", "6cd699110c541d77066623903a4df720"), # 3 2.7G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020130.v128568730_e270234840.tsv", "51ad8da8cc2d8b25e24b37dddfd6cd4d"), # 4 5.1G
     ("https://graphchallenge.s3.amazonaws.com/synthetic/gc5/201512020330.v226196185_e480047894.tsv", "3b7f0546835d1f10cc41312f7a12b8d1"), # 5 9.6G
-
 ]
 
+# http://law.di.unimi.it/datasets.php
+LAW = [
+    
+]

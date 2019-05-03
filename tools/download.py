@@ -13,7 +13,7 @@ import sys
 import struct
 import gzip
 import shutil
-from util.datasets import GRAPH_CHALLENGE
+from datasets import GRAPH_CHALLENGE
 
 
 def get_remote_size(url):
