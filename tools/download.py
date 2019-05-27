@@ -6,8 +6,8 @@ import argparse
 import sys
 
 from datasets import GRAPH_CHALLENGE
-from cmds.webgraph import webgraph
-from cmds.graph_challenge import graphchallenge
+from download_cmds.webgraph import webgraph
+from download_cmds.graph_challenge import graphchallenge
 
 
 parser = argparse.ArgumentParser()
