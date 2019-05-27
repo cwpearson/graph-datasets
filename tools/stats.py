@@ -8,6 +8,8 @@ import logging
 from util.edgelist import edgelist
 from collections import defaultdict
 import argparse
+from multiprocessing import Pool, Manager
+import time
 
 def histogram(xs, num_buckets):
     min_x = min(xs)
@@ -68,6 +70,7 @@ logging.basicConfig(level=logging.INFO)
 parser = argparse.ArgumentParser(description="Print some graph statistics")
 parser.add_argument('paths', type=str, nargs="+", help="graph files")
 parser.add_argument('-d', '--dag', type=str, choices=["lower", "upper"], nargs="+", default=["lower", "upper"], help="lower (src > dst) or upper (src < dst)")
+parser.add_argument('-n', type=int, default=1, help="number of parallel workers")
 args = parser.parse_args()
 
 def upper_triangular(edge):
@@ -76,68 +79,116 @@ def upper_triangular(edge):
 def lower_triangular(edge):
     return edge[1] < edge[0]
 
-print("graph, dag, nodes, edges, out_min, out_max, out_avg, out_med, out_var, out_ssd, buckets")
 
+
+
+
+
+def compute_stats(path, edge_filter):
+    logging.info("running path={}".format(path))
+    stats = {"path": path}
+
+    if edge_filter == "upper":
+        dag_filter = upper_triangular
+        stats["dag"] = edge_filter
+    elif edge_filter == "lower":
+        dag_filter = lower_triangular
+        stats["dag"] = edge_filter
+    else:
+        logging.error("Unhandled DAG filter")
+        sys.exit(-1)
+
+    adj = defaultdict(int)
+    dsts = set()
+
+    with edgelist(path) as el:
+        for edge in el:
+            if dag_filter(edge):
+                src, dst = edge
+                adj[src] += 1
+                dsts.add(dst)
+
+
+
+    # compute nodes
+    num_nodes = len(set(dsts).union(set(adj)))
+    logging.info("{}[nodes]={}".format(path, num_nodes))
+    stats["nodes"] = num_nodes
+
+    # compute in degree and out degree
+    out_degrees = adj.values()
+    
+
+
+    # out-degree statistics
+    num_edges = sum(out_degrees)
+    min_out = min(out_degrees)
+    max_out = max(out_degrees)
+    avg_out = avg(out_degrees)
+    med_out = med(out_degrees)
+    var_out = var(out_degrees)
+    logging.info("{}[edges]={}".format(path, num_edges))
+    stats["edges"] = num_edges
+    stats["min_out"] = min_out
+    stats["max_out"] = max_out
+    stats["avg_out"] = avg_out
+    stats["med_out"] = med_out
+    stats["var_out"] = var_out
+
+
+
+    ssd_out = sum(d ** 2 for d in out_degrees)
+    # print("out ssd:", out_ssd)
+    logging.info("{}[ssd_out]={}".format(path, ssd_out))
+    stats["ssd_out"] = ssd_out
+
+    histo_out = histogram_power(out_degrees)
+    logging.info("{}[histo_out]={}".format(path, histo_out))
+    stats["histo_out"] = histo_out
+
+    # histo_sf2 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 2)
+    # histo_sf3 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 3)
+
+    # print("sf2:", histo_sf2)
+    # print("sf3:", histo_sf3)
+    return stats
+
+pool = Pool(args.n)
+m = Manager()
+
+jobs = []
 for path in args.paths:
     for dag in args.dag:
+        
+        jobs += [pool.apply_async(compute_stats, (path, dag,))]
 
-        if dag == "upper":
-            dag_filter = upper_triangular
-        elif dag == "lower":
-            dag_filter = lower_triangular
-        else:
-            logging.error("Unhandled DAG filter")
-            sys.exit(-1)
+print("graph, dag, nodes, edges, out_min, out_max, out_avg, out_med, out_var, out_ssd, buckets")
+while jobs:
+    finished = None
+    for j in jobs:
+        if j.ready():
+            stats = j.get()
+            print("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(
+                stats["path"],
+                stats["dag"],
+                stats["nodes"],
+                stats["edges"],
+                stats["min_out"],
+                stats["max_out"],
+                stats["avg_out"],
+                stats["med_out"],
+                stats["var_out"],
+                stats["ssd_out"],
+                ", ".join(str(e) for e in stats["histo_out"])
+            ))
+            sys.stdout.flush()
+            finished = j
+            break
+    if finished:
+        jobs.remove(j)
+    else:
+        time.sleep(0.01)
 
-        print("{}, {}, ".format(os.path.basename(path), dag), end = "")
-        sys.stdout.flush()
+pool.close()
+pool.join()
 
-        adj = defaultdict(int)
-        dsts = set()
-
-        with edgelist(path) as el:
-            for edge in el:
-                if dag_filter(edge):
-                    src, dst = edge
-                    adj[src] += 1
-                    dsts.add(dst)
-
-        # compute nodes
-        num_nodes = len(set(dsts).union(set(adj)))
-        # print("nodes:", len(nodes))
-
-        # compute in degree and out degree
-        out_degrees = adj.values()
-        num_edges = sum(out_degrees)
-
-        # out-degree statistics
-        min_out = min(out_degrees)
-        max_out = max(out_degrees)
-        avg_out = avg(out_degrees)
-        med_out = med(out_degrees)
-        var_out = var(out_degrees)
-
-
-        ssd_out = sum(d ** 2 for d in out_degrees)
-        # print("out ssd:", out_ssd)
-        # print("in ssd :", in_ssd)
-
-        histo_out = histogram_power(out_degrees)
-
-        # histo_sf2 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 2)
-        # histo_sf3 = make_sf(sum(in_degree), min_out, max_out, NUM_BUCKETS, 3)
-
-        # print("sf2:", histo_sf2)
-        # print("sf3:", histo_sf3)
-
-        print("{}, {}, {}, {}, {}, {}, {}, {}, {}".format(
-            num_nodes,
-            num_edges,
-            min_out,
-            max_out,
-            avg_out,
-            med_out,
-            var_out,
-            ssd_out,
-            ", ".join(str(e) for e in histo_out)
-        ))

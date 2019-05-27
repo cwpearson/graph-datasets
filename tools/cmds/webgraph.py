@@ -1,6 +1,6 @@
 """the webgraph download subcommand"""
 
-from util.datasets import Webgraph
+from datasets import Webgraph
 
 
 def webgraph(args):

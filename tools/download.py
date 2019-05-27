@@ -5,7 +5,7 @@ Download datasets
 import argparse
 import sys
 
-from util.datasets import GRAPH_CHALLENGE
+from datasets import GRAPH_CHALLENGE
 from cmds.webgraph import webgraph
 from cmds.graph_challenge import graphchallenge
 
