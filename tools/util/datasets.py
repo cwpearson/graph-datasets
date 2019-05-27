@@ -378,11 +378,11 @@ class Webgraph(object):
             f.write("")
 
         for i, url in enumerate(index_file_urls):
-            print(f"fetch index file {i}/{len(index_file_urls)}")
+            print(f"check index file {i}/{len(index_file_urls)}")
             self.retrieve_file(url)
 
         for i, url in enumerate(arc_file_urls):
-            print(f"fetch arch file {i}/{len(arc_file_urls)}")
+            print(f"check arc file {i}/{len(arc_file_urls)}")
             self.retrieve_file(url)
 
     def extract(src, dst):
@@ -416,9 +416,3 @@ class Webgraph(object):
 
         p.close()
         p.join()
-
-
-w = Webgraph("/home/pearson/graph/webgraph-page")
-
-w.fetch_gzs()
-w.extract_gzs()
