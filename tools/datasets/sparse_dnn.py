@@ -26,8 +26,8 @@ class SparseDNN(object):
     layers = {
         "1024": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron1024.tar.gz",
                  "8ccdd73e06ff905f7c72410e9a5cc4be"),
-        "4096": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096.tar.gz", None),
-        "16384": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384.tar.gz", None),
+        "4096": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096.tar.gz", "ebf3785df180ae921db7c805e5c9adfb"),
+        "16384": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384.tar.gz", "92a48c20050e3d8fcf511b810eb56faf"),
         "65536": ("https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536.tar.gz", None),
     }
 
@@ -40,27 +40,31 @@ class SparseDNN(object):
             "1920": (
                 "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron1024-l1920-categories.tsv", None),
         },
+        "4096": {
+            "120": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l120-categories.tsv", None),
+            "480": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l480-categories.tsv", None),
+            "1920": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l1920-categories.tsv", None),
+        },
+        "16384": {
+            "120": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l120-categories.tsv", None),
+            "480": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l480-categories.tsv", None),
+            "1920": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l1920-categories.tsv", None),
+        },
+        "65536": {
+            "120": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l120-categories.tsv", None),
+            "480": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l480-categories.tsv", None),
+            "1920": (
+                "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l1920-categories.tsv", None),
+        },
     }
-    """
-    layer_4096_120_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l120-categories.tsv", "")
-    layer_4096_480_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l480-categories.tsv", "")
-    layer_4096_1920_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron4096-l1920-categories.tsv", "")
-    layer_16384_120_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l120-categories.tsv", "")
-    layer_16384_480_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l480-categories.tsv", "")
-    layer_16384_1920_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron16384-l1920-categories.tsv", "")
-    layer_65536_120_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l120-categories.tsv", "")
-    layer_65536_480_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l480-categories.tsv", "")
-    layer_65536_1920_cat = (
-        "https://graphchallenge.s3.amazonaws.com/synthetic/sparsechallenge_2019/dnn/neuron65536-l1920-categories.tsv", "")
-        """
 
     def __init__(self, dst):
         self.dst = pathlib.Path(dst).resolve()
@@ -136,5 +140,14 @@ class SparseDNN(object):
             SparseDNN.retrieve_file(dst, tup[0], tup[1])
 
 
-d = SparseDNN("test")
+d = SparseDNN("/home/pearson/graph/sparse-dnn-1024")
 d.fetch("1024")
+
+d = SparseDNN("/home/pearson/graph/sparse-dnn-4096")
+d.fetch("4096")
+
+d = SparseDNN("/home/pearson/graph/sparse-dnn-16384")
+d.fetch("16384")
+
+d = SparseDNN("/home/pearson/graph/sparse-dnn-65536")
+d.fetch("65536")
